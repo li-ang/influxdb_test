@@ -6,6 +6,9 @@
 # Folders
 _obj
 _test
+cluster/.one
+cluster/.two
+cluster/.three
 
 # Architecture specific extensions/prefixes
 *.[568vq]
