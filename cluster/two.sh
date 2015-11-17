@@ -32,7 +32,7 @@ read info
 
 case $info in
 	yes|y|Y)
-	rm -rf $HOME/goproject/src/github.com/li-ang/influxdb_test/.two
+	rm -rf $HOME/goproject/src/github.com/li-ang/influxdb_test/cluster/.two
 	echo ""
 	echo "已删除旧数据"
 	echo ""
