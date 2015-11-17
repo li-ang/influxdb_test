@@ -8,6 +8,10 @@ echo "正在启动InfluxDB"
 
 echo ""
 
+echo "注意，由于是在同一台机器中启动三个InfluxDB进程，因此部分端口已经改变，具体细节请查看配置文件"
+
+echo ""
+
 echo "当前InfluxDB的分支为："
 
 echo ""
