@@ -43,11 +43,10 @@ func main() {
 		}
 
 		if log.Type == raft.LogAddPeer || log.Type == raft.LogCommand {
-			// log.Data = encodePeers([]string{"192.168.1.3:8088"})
 			peers := decodePeers(log.Data)
 
 			if len(peers) == 0 {
-				return
+				continue
 			}
 			if PeerContained(peers, "localhost:8088") {
 				log.Data = encodePeers([]string{"192.168.1.3:8088"})
