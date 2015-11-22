@@ -6,9 +6,9 @@
 # Folders
 _obj
 _test
-cluster/.one
-cluster/.two
-cluster/.three
+cluster/.one/
+cluster/.two/
+cluster/.three/
 
 # Architecture specific extensions/prefixes
 *.[568vq]
@@ -26,5 +26,5 @@ _testmain.go
 *.test
 *.prof
 
-# config file
-benchmark.conf
+# Config File
+benchmark/*.conf
