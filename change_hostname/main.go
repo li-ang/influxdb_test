@@ -22,9 +22,9 @@ const (
 )
 
 type Config struct {
-	Dir    string `json: "Dir"`
-	Origin string `json: "Origin"`
-	New    string `json: "New"`
+	Dir    string `json:"dir"`
+	Origin string `json:"origin"`
+	New    string `json:"new"`
 }
 
 func main() {
