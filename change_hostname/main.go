@@ -8,9 +8,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/hashicorp/go-msgpack/codec"
 	"github.com/hashicorp/raft"
 	"github.com/hashicorp/raft-boltdb"
+	"github.com/influxdb/influxdb/meta/internal"
 
 	qlog "github.com/qiniu/log.v1"
 	"qbox.us/cc/config"
@@ -96,22 +98,51 @@ func modifyRaftDB(originPeer string, newPeer string, path string) error {
 		return err
 	}
 
-	for i := 1; i < int(lastIdx); i++ {
+	for i := 1; i <= int(lastIdx); i++ {
 		log := new(raft.Log)
 		if err = db.GetLog(uint64(i), log); err != nil {
 			qlog.Debug(err)
 			continue
 		}
 
-		if log.Type == raft.LogAddPeer || log.Type == raft.LogCommand {
+		switch log.Type {
+		case raft.LogAddPeer:
 			peers := decodePeers(log.Data)
 
 			if len(peers) == 0 {
+				qlog.Debug("peers == 0")
 				continue
 			}
 
 			if peerContained(peers, originPeer) {
+				qlog.Debug("peerContained the originPeer")
 				log.Data = encodePeers([]string{newPeer})
+				err = db.StoreLog(log)
+				if err != nil {
+					qlog.Debug(err)
+					return err
+				}
+			}
+
+		case raft.LogCommand:
+			var cmd internal.Command
+			if err := proto.Unmarshal(log.Data, &cmd); err != nil {
+				qlog.Debug(err)
+				continue
+			}
+
+			if cmd.GetType() == internal.Command_CreateNodeCommand {
+				ext, _ := proto.GetExtension(&cmd, internal.E_CreateNodeCommand_Command)
+				v, ok := ext.(*internal.CreateNodeCommand)
+				if !ok {
+					continue
+				}
+				v.Host = &newPeer
+				log.Data, err = proto.Marshal(&cmd)
+				if err != nil {
+					qlog.Debug(err)
+					return err
+				}
 				err = db.StoreLog(log)
 				if err != nil {
 					qlog.Debug(err)
