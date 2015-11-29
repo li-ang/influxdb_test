@@ -1,7 +1,7 @@
 reporting-disabled = false
 
 [meta]
-  dir = "/Users/Leo/goproject/src/github.com/li-ang/influxdb_test/cluster/.three/meta"
+  dir = "/Users/Leon/goproject/src/github.com/li-ang/influxdb_test/cluster/.three/meta"
   hostname = "127.0.0.1"
   bind-address = ":10101"
   retention-autocreate = true
@@ -13,12 +13,12 @@ reporting-disabled = false
   raft-promotion-enabled = true
 
 [data]
-  dir = "/Users/Leo/goproject/src/github.com/li-ang/influxdb_test/cluster/.three/data"
+  dir = "/Users/Leon/goproject/src/github.com/li-ang/influxdb_test/cluster/.three/data"
   engine = "bz1"
   max-wal-size = 104857600
   wal-flush-interval = "10m0s"
   wal-partition-flush-delay = "2s"
-  wal-dir = "/Users/Leo/goproject/src/github.com/li-ang/influxdb_test/cluster/.three/wal"
+  wal-dir = "/Users/Leon/goproject/src/github.com/li-ang/influxdb_test/cluster/.three/wal"
   wal-logging-enabled = true
   wal-ready-series-size = 30720
   wal-compaction-threshold = 0.5
@@ -112,7 +112,7 @@ reporting-disabled = false
 
 [hinted-handoff]
   enabled = true
-  dir = "/Users/Leo/goproject/src/github.com/li-ang/influxdb_test/cluster/.three/hh"
+  dir = "/Users/Leon/goproject/src/github.com/li-ang/influxdb_test/cluster/.three/hh"
   max-size = 1073741824
   max-age = "168h0m0s"
   retry-rate-limit = 0
