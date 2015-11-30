@@ -27,6 +27,6 @@ _testmain.go
 *.prof
 
 # Config File
-benchmark/*.conf
-change_hostname/*.conf
+benchmark/default.conf
+change_hostname/default.conf
 cluster/*.toml
