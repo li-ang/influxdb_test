@@ -29,3 +29,4 @@ _testmain.go
 # Config File
 benchmark/*.conf
 change_hostname/*.conf
+cluster/*.toml
