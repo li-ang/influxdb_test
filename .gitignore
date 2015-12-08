@@ -9,6 +9,8 @@ _test
 cluster/.one/
 cluster/.two/
 cluster/.three/
+read_snapshot/.influxdb/
+read_snapshot/snapshots/
 
 # Architecture specific extensions/prefixes
 *.[568vq]
@@ -31,3 +33,7 @@ benchmark/default.conf
 change_hostname/default.conf
 cluster/*.toml
 cluster/aggregative_test.sh
+
+read_snapshot/config.toml
+read_snapshot/default.conf
+read_snapshot/influxd
