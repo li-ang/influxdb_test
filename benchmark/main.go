@@ -16,6 +16,7 @@ import (
 
 type Config struct {
 	URL                     string            `json:"influxURL"`
+	RepoId                  string            `json:"repoId"`
 	Database                string            `json:"database"`
 	Retention               string            `json:"retention"`
 	Precision               string            `json:"precision"`
@@ -96,7 +97,8 @@ func writePoints(num int, gorutineClient *client.Client, conf *Config) {
 
 		for i := 0; i < batchSize; i++ {
 
-			tagSet := make(map[string]string, len(tagKeySet))
+			// tagSet := make(map[string]string, len(tagKeySet))
+			tagSet := make(map[string]string, len(tagKeySet+1))
 			fieldSet := make(map[string]interface{}, len(fieldKeySet))
 
 			for _, tag := range tagKeySet {
@@ -133,6 +135,8 @@ func writePoints(num int, gorutineClient *client.Client, conf *Config) {
 				if conf.FieldValueRange[index].Type == "bool" {
 				}
 			}
+
+			tagSet["repoid"] = conf.RepoId
 
 			pts[i] = client.Point{
 				Measurement: conf.Measurement,
