@@ -98,7 +98,7 @@ func writePoints(num int, gorutineClient *client.Client, conf *Config) {
 		for i := 0; i < batchSize; i++ {
 
 			// tagSet := make(map[string]string, len(tagKeySet))
-			tagSet := make(map[string]string, len(tagKeySet+1))
+			tagSet := make(map[string]string, len(tagKeySet)+1)
 			fieldSet := make(map[string]interface{}, len(fieldKeySet))
 
 			for _, tag := range tagKeySet {
