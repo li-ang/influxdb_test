@@ -28,6 +28,5 @@ _testmain.go
 
 # Config File
 benchmark/default.conf
-change_hostname/default.conf
 cluster/*.toml
 cluster/aggregative_test.sh
