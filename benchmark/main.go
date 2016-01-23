@@ -16,7 +16,6 @@ import (
 
 type Config struct {
 	URL                     string            `json:"influxURL"`
-	RepoId                  string            `json:"repoId"`
 	Database                string            `json:"database"`
 	Retention               string            `json:"retention"`
 	Precision               string            `json:"precision"`
@@ -135,8 +134,6 @@ func writePoints(num int, gorutineClient *client.Client, conf *Config) {
 				if conf.FieldValueRange[index].Type == "bool" {
 				}
 			}
-
-			tagSet["repoid"] = conf.RepoId
 
 			pts[i] = client.Point{
 				Measurement: conf.Measurement,
