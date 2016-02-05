@@ -9,6 +9,9 @@ _test
 cluster/.one/
 cluster/.two/
 cluster/.three/
+0.10.3/
+0.12.1/
+debug/
 
 # Architecture specific extensions/prefixes
 *.[568vq]
