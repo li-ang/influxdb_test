@@ -1,15 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
+	"net/http"
 	"net/url"
 	"strconv"
 	"sync"
 	"time"
 
+	"github.com/influxdata/influxdb/client"
 	"qbox.us/cc/config"
-
-	"github.com/influxdb/influxdb/client"
 
 	qlog "github.com/qiniu/log.v1"
 )
@@ -20,6 +21,7 @@ type Config struct {
 	Retention               string            `json:"retention"`
 	Precision               string            `json:"precision"`
 	GorutineNum             int               `json:"gorutineNum"`
+	GorutineBatchLimit      int               `json:"gorutineBatchLimit"`
 	BatchSize               int               `json:"batchSize"`
 	BatchPointsInSameSeries bool              `json:"batchPointsInSameSeries"`
 	BatchCountPerSecond     int               `json:"batchCountPerSecond"`
@@ -42,18 +44,22 @@ func main() {
 
 	var wg sync.WaitGroup
 	var conf Config
+	// timer := time.NewTimer(3 * time.Minute)
 	if err := config.Load(&conf); err != nil {
 		qlog.Fatal("config.Load failed:", err)
 		return
 	}
 
 	qlog.SetOutputLevel(conf.DebugLevel)
-
 	host, err := url.Parse(conf.URL)
-
 	if err != nil {
 		return
 	}
+
+	dbUrl := conf.URL + "/query?q=" + url.QueryEscape(fmt.Sprintf("create database %s", conf.Database))
+	rpURL := conf.URL + "/query?q=" + url.QueryEscape(fmt.Sprintf("create retention policy %s on %s duration 3d replication 1", conf.URL, conf.Database, conf.Retention))
+	http.Get(dbUrl)
+	http.Get(rpURL)
 
 	var gorutineClients []*client.Client
 	gorutineClients = make([]*client.Client, conf.GorutineNum)
@@ -68,17 +74,22 @@ func main() {
 		}
 
 		wg.Add(1)
-		go writePoints(i, gorutineClients[i], &conf)
+		go writePoints(i, gorutineClients[i], &conf, &wg)
 	}
 	wg.Wait()
+
+	// <-timer.C
+	return
 }
 
-func writePoints(num int, gorutineClient *client.Client, conf *Config) {
+func writePoints(num int, gorutineClient *client.Client, conf *Config, wg *sync.WaitGroup) {
+	defer wg.Done()
 
-	batchCount := 1000 / conf.BatchCountPerSecond
-	writeTimeDuration := (time.Duration(batchCount)) * time.Millisecond
+	limit := 0
+	// batchCount := 1000 / conf.BatchCountPerSecond
+	// writeTimeDuration := (time.Duration(batchCount)) * time.Millisecond
 
-	writeTimer := time.NewTimer(writeTimeDuration)
+	// writeTimer := time.NewTimer(writeTimeDuration)
 
 	batchSize := conf.BatchSize
 
@@ -90,14 +101,12 @@ func writePoints(num int, gorutineClient *client.Client, conf *Config) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for {
-		<-writeTimer.C
-
+		// <-writeTimer.C
 		pts := make([]client.Point, batchSize)
 
 		for i := 0; i < batchSize; i++ {
-
-			// tagSet := make(map[string]string, len(tagKeySet))
-			tagSet := make(map[string]string, len(tagKeySet)+1)
+			tagSet := make(map[string]string, len(tagKeySet))
+			// tagSet := make(map[string]string, len(tagKeySet)+1)
 			fieldSet := make(map[string]interface{}, len(fieldKeySet))
 
 			for _, tag := range tagKeySet {
@@ -158,8 +167,12 @@ func writePoints(num int, gorutineClient *client.Client, conf *Config) {
 			qlog.Debug(err)
 			return
 		}
+		limit++
+		if limit == conf.GorutineBatchLimit {
+			qlog.Debugf("The %d has finished %d batches", num, limit)
+			return
+		}
 
-		writeTimer.Reset(writeTimeDuration)
+		// writeTimer.Reset(writeTimeDuration)
 	}
-
 }
