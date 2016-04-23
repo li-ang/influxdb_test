@@ -153,6 +153,8 @@ func writePoints(num int, gorutineClient *client.Client, conf *Config, wg *sync.
 			}
 		}
 
+		qlog.Info(pts[0].Time.UnixNano())
+
 		bp := client.BatchPoints{
 			Points:          pts,
 			Database:        conf.Database,
